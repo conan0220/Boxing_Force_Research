@@ -10,6 +10,8 @@ class RecorderConfigTests(unittest.TestCase):
         text = """\
 [recording]
 output_root = data
+subject_height_cm = 175.5
+subject_weight_kg = 70.25
 default_baud_rate = 921600
 
 [receiver.COM3]
@@ -28,17 +30,39 @@ node.3 = torso
             config = load_config(path)
         self.assertEqual(len(config.receivers), 2)
         self.assertEqual(config.receivers[0].port, "COM3")
+        self.assertEqual(config.subject_height_cm, 175.5)
+        self.assertEqual(config.subject_weight_kg, 70.25)
         self.assertEqual(config.receivers[0].nodes[1].wear_location, "right_wrist")
         self.assertEqual(config.receivers[1].baud_rate, 460800)
 
     def test_rejects_duplicate_group_ids(self) -> None:
         text = """\
+[recording]
+subject_height_cm = 175
+subject_weight_kg = 70
+
 [receiver.COM3]
 group_id = 1
 node.0 = left_wrist
 [receiver.COM4]
 group_id = 1
 node.0 = torso
+"""
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "trial.cfg"
+            path.write_text(text, encoding="utf-8")
+            with self.assertRaises(ConfigError):
+                load_config(path)
+
+    def test_requires_positive_subject_height_and_weight(self) -> None:
+        text = """\
+[recording]
+subject_height_cm = 0
+subject_weight_kg = 70
+
+[receiver.COM3]
+group_id = 1
+node.0 = left_wrist
 """
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "trial.cfg"

@@ -25,6 +25,7 @@ uv run python -m unittest discover -s .\tests -v
 - Windows COM Port
 - Group ID
 - Node ID 與佩帶位置
+- 受試者身高（cm）與體重（kg）
 
 ## 錄製一個 Trial
 

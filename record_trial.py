@@ -7,6 +7,7 @@ import configparser
 import csv
 import hashlib
 import json
+import math
 import os
 import re
 import shutil
@@ -46,6 +47,8 @@ CSV_HEADER = (
 MANIFEST_HEADER = (
     "trial_id",
     "subject_id",
+    "subject_height_cm",
+    "subject_weight_kg",
     "session_id",
     "recorded_at",
     "trial_path",
@@ -80,6 +83,8 @@ class TrialConfig:
     config_path: Path
     output_root: Path
     subject_id: str
+    subject_height_cm: float
+    subject_weight_kg: float
     session_id: str
     receivers: tuple[ReceiverConfig, ...]
 
@@ -91,6 +96,16 @@ def _parse_int(value: str, *, name: str, minimum: int, maximum: int) -> int:
         raise ConfigError(f"{name} 必須是整數") from error
     if not minimum <= parsed <= maximum:
         raise ConfigError(f"{name} 必須介於 {minimum} 與 {maximum} 之間")
+    return parsed
+
+
+def _parse_positive_number(value: str, *, name: str) -> float:
+    try:
+        parsed = float(value)
+    except ValueError as error:
+        raise ConfigError(f"{name} 必須是數值") from error
+    if not math.isfinite(parsed) or parsed <= 0:
+        raise ConfigError(f"{name} 必須是有限且大於 0 的數值")
     return parsed
 
 
@@ -108,9 +123,20 @@ def load_config(path: Path) -> TrialConfig:
     except (OSError, configparser.Error) as error:
         raise ConfigError(f"無法讀取 config：{error}") from error
 
-    recording = parser["recording"] if parser.has_section("recording") else {}
+    if not parser.has_section("recording"):
+        raise ConfigError("config 缺少 [recording] section")
+    recording = parser["recording"]
+    for required_key in ("subject_height_cm", "subject_weight_kg"):
+        if required_key not in recording:
+            raise ConfigError(f"[recording] 缺少 {required_key}")
     output_root = Path(str(recording.get("output_root", "data"))).expanduser()
     subject_id = str(recording.get("subject_id", "")).strip()
+    subject_height_cm = _parse_positive_number(
+        recording["subject_height_cm"], name="subject_height_cm"
+    )
+    subject_weight_kg = _parse_positive_number(
+        recording["subject_weight_kg"], name="subject_weight_kg"
+    )
     session_id = str(recording.get("session_id", "")).strip()
     default_baud = _parse_int(
         str(recording.get("default_baud_rate", DEFAULT_BAUD_RATE)),
@@ -183,6 +209,8 @@ def load_config(path: Path) -> TrialConfig:
         config_path=path.resolve(),
         output_root=output_root.resolve(),
         subject_id=subject_id,
+        subject_height_cm=subject_height_cm,
+        subject_weight_kg=subject_weight_kg,
         session_id=session_id,
         receivers=tuple(sorted(receivers, key=lambda item: item.port)),
     )
@@ -481,6 +509,8 @@ def record_trial(config: TrialConfig) -> int:
             "schema_version": 1,
             "trial_id": trial_id,
             "subject_id": config.subject_id,
+            "subject_height_cm": config.subject_height_cm,
+            "subject_weight_kg": config.subject_weight_kg,
             "session_id": config.session_id,
             "quality_status": quality_status,
             "quality_flags": quality_flags,
@@ -498,6 +528,8 @@ def record_trial(config: TrialConfig) -> int:
         {
             "trial_id": trial_id,
             "subject_id": config.subject_id,
+            "subject_height_cm": _format_number(config.subject_height_cm),
+            "subject_weight_kg": _format_number(config.subject_weight_kg),
             "session_id": config.session_id,
             "recorded_at": recorded_at,
             "trial_path": trial_directory.relative_to(config.output_root).as_posix(),

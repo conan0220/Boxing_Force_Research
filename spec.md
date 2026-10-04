@@ -10,6 +10,8 @@
 | Group ID | 無線接收器及其所屬 IMU Nodes 共用的識別碼。 |
 | Node ID | 同一 Group 內一顆 IMU 的識別碼。 |
 | 佩帶位置 | IMU 在人體或裝備上的安裝位置，例如 `left_wrist`、`right_wrist` 或 `torso`。 |
+| Subject Height | 受試者身高，以公分（cm）記錄，欄位名稱為 `subject_height_cm`。 |
+| Subject Weight | 受試者體重，以公斤（kg）記錄，欄位名稱為 `subject_weight_kg`。 |
 | Trial | 一次完整資料收集，包含固定 5 秒的 IMU 資料及一個由使用者輸入的 Peak Force。 |
 | Peak Force | 該次擊打後，力板顯示的最大力量。 |
 | kgf | 公斤力（kilogram-force），為力量單位；`1 kgf = 9.80665 N`。 |
@@ -78,6 +80,8 @@ python .\record_trial.py --config .\configs\example.cfg
 [recording]
 output_root = data
 subject_id = subject_001
+subject_height_cm = 175
+subject_weight_kg = 70
 session_id = session_001
 default_baud_rate = 921600
 
@@ -98,6 +102,8 @@ node.0 = torso
 |---|---:|---|---|
 | `output_root` | 否 | `data` | Dataset 根目錄；相對路徑以執行腳本時的工作目錄為基準。 |
 | `subject_id` | 否 | 空字串 | 匿名受試者 ID。 |
+| `subject_height_cm` | 是 | 無 | 受試者身高，單位 cm；必須是有限且大於 0 的數值。 |
+| `subject_weight_kg` | 是 | 無 | 受試者體重，單位 kg；必須是有限且大於 0 的數值。 |
 | `session_id` | 否 | 空字串 | 使用者定義的 Session ID。 |
 | `default_baud_rate` | 否 | `921600` | Receiver 未個別設定時使用的 baud rate。 |
 
@@ -280,6 +286,8 @@ peak_force_n = peak_force_kgf * 9.80665
   "schema_version": 1,
   "trial_id": "uuid",
   "subject_id": "optional",
+  "subject_height_cm": 175.0,
+  "subject_weight_kg": 70.0,
   "session_id": "optional",
   "quality_status": "complete | invalid | aborted",
   "quality_flags": [],
@@ -309,7 +317,7 @@ peak_force_n = peak_force_kgf * 9.80665
 `dataset_manifest.csv` MUST 一列代表一個 Trial，至少包含：
 
 ```text
-trial_id,subject_id,session_id,recorded_at,trial_path,
+trial_id,subject_id,subject_height_cm,subject_weight_kg,session_id,recorded_at,trial_path,
 peak_force_kgf,peak_force_n,quality_status
 ```
 
