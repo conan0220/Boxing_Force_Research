@@ -1,0 +1,61 @@
+{
+  "schema_version": 1,
+  "trial_id": "977af757-2275-41a5-a0ba-80b3e1fb951a",
+  "subject_id": "shouyi",
+  "subject_height_cm": 171.0,
+  "subject_weight_kg": 70.0,
+  "session_id": "withoutGloves",
+  "quality_status": "complete",
+  "quality_flags": [],
+  "countdown_seconds": 3,
+  "requested_recording_seconds": 5.0,
+  "actual_recording_seconds": 5.000350100046489,
+  "recording_started_at": "2026-10-08T08:44:34.700026+00:00",
+  "recording_ended_at": "2026-10-08T08:44:39.700325+00:00",
+  "sources": [
+    {
+      "port": "COM10",
+      "group_id": 2,
+      "node_id": 0,
+      "wear_location": "right_wrist",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM10_G2_N0.csv",
+      "row_count": 1999,
+      "size_bytes": 233475,
+      "sha256": "bc115e19eda29ca7448e5b9a1bb9622cb095b6adf3017e3fb2d665e9894c8d37"
+    },
+    {
+      "port": "COM10",
+      "group_id": 2,
+      "node_id": 1,
+      "wear_location": "striking_surface",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM10_G2_N1.csv",
+      "row_count": 1999,
+      "size_bytes": 217332,
+      "sha256": "1cc8386116dac2d972a965b721c2d45aa36994e1905fac5513909ce76f520b5e"
+    },
+    {
+      "port": "COM8",
+      "group_id": 0,
+      "node_id": 0,
+      "wear_location": "right_shoulder",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM8_G0_N0.csv",
+      "row_count": 1999,
+      "size_bytes": 234261,
+      "sha256": "994b456de80c16dddcee48709bc495ee6cd8938b8ede7bbf3d7a77771727b7bc"
+    },
+    {
+      "port": "COM8",
+      "group_id": 0,
+      "node_id": 1,
+      "wear_location": "left_shoulder",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM8_G0_N1.csv",
+      "row_count": 1999,
+      "size_bytes": 232880,
+      "sha256": "3e75fb20a5eadc2a1fe8fb1746cbd775e67242ada79769c40e4e71254e08e6c8"
+    }
+  ]
+}
