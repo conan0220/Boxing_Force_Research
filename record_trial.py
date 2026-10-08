@@ -85,6 +85,7 @@ class TrialConfig:
     subject_id: str
     subject_height_cm: float
     subject_weight_kg: float
+    punch_hand: str
     session_id: str
     receivers: tuple[ReceiverConfig, ...]
 
@@ -126,7 +127,7 @@ def load_config(path: Path) -> TrialConfig:
     if not parser.has_section("recording"):
         raise ConfigError("config 缺少 [recording] section")
     recording = parser["recording"]
-    for required_key in ("subject_height_cm", "subject_weight_kg"):
+    for required_key in ("subject_height_cm", "subject_weight_kg", "punch_hand"):
         if required_key not in recording:
             raise ConfigError(f"[recording] 缺少 {required_key}")
     output_root = Path(str(recording.get("output_root", "data"))).expanduser()
@@ -137,6 +138,9 @@ def load_config(path: Path) -> TrialConfig:
     subject_weight_kg = _parse_positive_number(
         recording["subject_weight_kg"], name="subject_weight_kg"
     )
+    punch_hand = recording["punch_hand"].strip().lower()
+    if punch_hand not in {"left", "right"}:
+        raise ConfigError("punch_hand 必須是 left 或 right")
     session_id = str(recording.get("session_id", "")).strip()
     default_baud = _parse_int(
         str(recording.get("default_baud_rate", DEFAULT_BAUD_RATE)),
@@ -211,6 +215,7 @@ def load_config(path: Path) -> TrialConfig:
         subject_id=subject_id,
         subject_height_cm=subject_height_cm,
         subject_weight_kg=subject_weight_kg,
+        punch_hand=punch_hand,
         session_id=session_id,
         receivers=tuple(sorted(receivers, key=lambda item: item.port)),
     )
@@ -511,6 +516,7 @@ def record_trial(config: TrialConfig) -> int:
             "subject_id": config.subject_id,
             "subject_height_cm": config.subject_height_cm,
             "subject_weight_kg": config.subject_weight_kg,
+            "punch_hand": config.punch_hand,
             "session_id": config.session_id,
             "quality_status": quality_status,
             "quality_flags": quality_flags,

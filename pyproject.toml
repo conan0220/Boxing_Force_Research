@@ -5,7 +5,9 @@ description = "Collect HI221 IMU trials with manually entered peak force ground 
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
 dependencies = [
+    "numpy>=2.0,<3",
     "pyserial>=3.5,<4",
+    "xgboost>=2.1,<4",
 ]
 
 [dependency-groups]

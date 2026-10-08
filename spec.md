@@ -12,6 +12,7 @@
 | 佩帶位置 | IMU 在人體或裝備上的安裝位置，例如 `left_wrist`、`right_wrist` 或 `torso`。 |
 | Subject Height | 受試者身高，以公分（cm）記錄，欄位名稱為 `subject_height_cm`。 |
 | Subject Weight | 受試者體重，以公斤（kg）記錄，欄位名稱為 `subject_weight_kg`。 |
+| Punch Hand | 該 Trial 實際用來擊打力板的手；`punch_hand` 僅允許 `left`（左手）或 `right`（右手），不代表受試者慣用手。 |
 | Trial | 一次完整資料收集，包含固定 5 秒的 IMU 資料及一個由使用者輸入的 Peak Force。 |
 | Peak Force | 該次擊打後，力板顯示的最大力量。 |
 | kgf | 公斤力（kilogram-force），為力量單位；`1 kgf = 9.80665 N`。 |
@@ -82,6 +83,7 @@ output_root = data
 subject_id = subject_001
 subject_height_cm = 175
 subject_weight_kg = 70
+punch_hand = right
 session_id = session_001
 default_baud_rate = 921600
 
@@ -104,6 +106,7 @@ node.0 = torso
 | `subject_id` | 否 | 空字串 | 匿名受試者 ID。 |
 | `subject_height_cm` | 是 | 無 | 受試者身高，單位 cm；必須是有限且大於 0 的數值。 |
 | `subject_weight_kg` | 是 | 無 | 受試者體重，單位 kg；必須是有限且大於 0 的數值。 |
+| `punch_hand` | 是 | 無 | 該 Trial 的出拳手；只接受 `left` 或 `right`（不分大小寫，保存時正規化為小寫）。 |
 | `session_id` | 否 | 空字串 | 使用者定義的 Session ID。 |
 | `default_baud_rate` | 否 | `921600` | Receiver 未個別設定時使用的 baud rate。 |
 
@@ -212,7 +215,7 @@ Enter peak force (kgf):
          └─ imu_COM4_G2_N0.csv
 ```
 
-Port、Group ID、Node ID、佩帶位置及 CSV 路徑 MUST 同時記錄在 `trial.json`。佩帶位置不必放入檔名，因此可安全使用中文或其他 Unicode 文字。
+出拳手、Port、Group ID、Node ID、佩帶位置及 CSV 路徑 MUST 同時記錄在 `trial.json`。佩帶位置不必放入檔名，因此可安全使用中文或其他 Unicode 文字。
 
 ## 7. Raw IMU CSV
 
@@ -288,6 +291,7 @@ peak_force_n = peak_force_kgf * 9.80665
   "subject_id": "optional",
   "subject_height_cm": 175.0,
   "subject_weight_kg": 70.0,
+  "punch_hand": "right",
   "session_id": "optional",
   "quality_status": "complete | invalid | aborted",
   "quality_flags": [],
@@ -342,5 +346,5 @@ peak_force_kgf,peak_force_n,quality_status
 6. 每顆設定 Node 產生一份符合固定 schema 的 CSV。
 7. 所有 CSV 使用同一個 `elapsed_us` 時間起點。
 8. 錄製結束後要求使用者輸入正數 Peak Force（kgf）。
-9. Trial Config、Ground Truth、來源對應、品質狀態與資料檔皆可追溯。
+9. Trial Config、出拳手、Ground Truth、來源對應、品質狀態與資料檔皆可追溯。
 10. 不同 Trial 不會互相覆寫。

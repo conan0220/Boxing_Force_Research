@@ -1,0 +1,481 @@
+{
+  "schema_version": 1,
+  "training_id": "1bb27cf5-c824-4ac0-b66d-8befc2f19ac4",
+  "created_at": "2026-10-08T11:49:05.017820+00:00",
+  "description": "第一個 XGBoost Baseline。使用 right_wrist 的三軸加速度與三軸角速度，並採用 80% Training、10% Validation、10% Testing。",
+  "model_file": "model.ubj",
+  "git_commit": "51ecb69f3beb303e11397f888880263933b644e6",
+  "target": "peak_force_kgf",
+  "training_config": {
+    "input_locations": [
+      "right_wrist"
+    ],
+    "input_signals": [
+      "acc_x_g",
+      "acc_y_g",
+      "acc_z_g",
+      "gyro_x_dps",
+      "gyro_y_dps",
+      "gyro_z_dps"
+    ],
+    "feature_set": "right-wrist-impact-stats-v1",
+    "feature_count": 48,
+    "impact_window_ms": 500.0,
+    "hyperparameters": {
+      "objective": "reg:squarederror",
+      "eval_metric": "rmse",
+      "eta": 0.03,
+      "max_depth": 3,
+      "min_child_weight": 3,
+      "subsample": 0.8,
+      "colsample_bytree": 0.8,
+      "lambda": 1.0,
+      "alpha": 0.0,
+      "seed": 42,
+      "nthread": 1
+    },
+    "maximum_boost_rounds": 1000,
+    "early_stopping_rounds": 50,
+    "best_iteration": 147,
+    "model_tree_count": 148,
+    "random_seed": 42
+  },
+  "data_split": {
+    "strategy": "force-sorted-block-80-10-10",
+    "training": {
+      "count": 82,
+      "trials": [
+        {
+          "trial_id": "382f4d6d-8b86-4d55-838e-ee26977a1b4b",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085307Z_382f4d6d"
+        },
+        {
+          "trial_id": "bd345f94-2e1a-480a-9540-ad89b5580bd2",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085521Z_bd345f94"
+        },
+        {
+          "trial_id": "e85192c4-a5d8-4764-8ef4-10217459cdba",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090515Z_e85192c4"
+        },
+        {
+          "trial_id": "3a242a96-0a63-4283-96fd-2ac966c9caa1",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085130Z_3a242a96"
+        },
+        {
+          "trial_id": "4610a840-172b-4f19-84b7-8b077bb797a3",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090052Z_4610a840"
+        },
+        {
+          "trial_id": "0eb2bbb8-a254-4624-92a6-94b4d0fe0776",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085811Z_0eb2bbb8"
+        },
+        {
+          "trial_id": "f68887a6-58ce-40d4-a6fe-ac0931e9ef3b",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085640Z_f68887a6"
+        },
+        {
+          "trial_id": "410f2266-ff39-4971-b140-81ff5c428fdc",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085212Z_410f2266"
+        },
+        {
+          "trial_id": "8fbef2c4-5a26-42ca-8ca4-5eb7c90425c9",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084208Z_8fbef2c4"
+        },
+        {
+          "trial_id": "755f1cc8-d626-495b-aedd-dbc8ea01b3d0",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084248Z_755f1cc8"
+        },
+        {
+          "trial_id": "cd070ea6-3403-4f95-80e2-be40ab2b1f4d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090157Z_cd070ea6"
+        },
+        {
+          "trial_id": "6d2b09b3-e06c-443f-973a-cea813dd16e5",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083833Z_6d2b09b3"
+        },
+        {
+          "trial_id": "9ca9ddb0-5d24-4826-a6f3-a31ea2aed3c7",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085426Z_9ca9ddb0"
+        },
+        {
+          "trial_id": "ddfa1438-0658-4525-8357-c537c4c4ef50",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085241Z_ddfa1438"
+        },
+        {
+          "trial_id": "cc2214ba-c8e6-4095-96c9-233896885b2d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090451Z_cc2214ba"
+        },
+        {
+          "trial_id": "da96cc79-4c06-44ae-a5c4-477ce6df710f",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090117Z_da96cc79"
+        },
+        {
+          "trial_id": "213db338-5571-40b3-8672-37406aafeb8a",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084223Z_213db338"
+        },
+        {
+          "trial_id": "4552f920-9d40-45bf-92d4-7649acc67c2b",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090401Z_4552f920"
+        },
+        {
+          "trial_id": "638a28ad-af62-42fd-9a2d-bd2a35940c06",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084301Z_638a28ad"
+        },
+        {
+          "trial_id": "65e09a93-f0b8-43ac-a97b-91a94ff13d17",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083913Z_65e09a93"
+        },
+        {
+          "trial_id": "41c9deea-5fee-4e3e-92cd-0544521aa574",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085852Z_41c9deea"
+        },
+        {
+          "trial_id": "3c1af01e-c168-4999-91ef-7046b0762788",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085745Z_3c1af01e"
+        },
+        {
+          "trial_id": "93c6805a-fc24-4c81-ab24-86f233ced583",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085227Z_93c6805a"
+        },
+        {
+          "trial_id": "d440d250-1fed-45b3-a656-4ed139e69b75",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090026Z_d440d250"
+        },
+        {
+          "trial_id": "b38f2c91-b576-4ba6-84b3-720e68f583fa",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090145Z_b38f2c91"
+        },
+        {
+          "trial_id": "46fce852-67bd-454a-90ed-33cff2eaf7ce",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085559Z_46fce852"
+        },
+        {
+          "trial_id": "c8102798-d32d-4ab1-a83f-3058149b212f",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085041Z_c8102798"
+        },
+        {
+          "trial_id": "f6b0ae01-0ac5-4c43-af5e-370e9026189e",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085347Z_f6b0ae01"
+        },
+        {
+          "trial_id": "1c7d4230-1a07-4bf5-be00-5ead29cd3f47",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084415Z_1c7d4230"
+        },
+        {
+          "trial_id": "7ab2ff0d-a829-4f5e-b2bc-71becd565a70",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090426Z_7ab2ff0d"
+        },
+        {
+          "trial_id": "dc419e86-213b-4027-8f06-528637e7f1ba",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084058Z_dc419e86"
+        },
+        {
+          "trial_id": "7278a3e1-0942-4ec0-ae73-c0086da20735",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090210Z_7278a3e1"
+        },
+        {
+          "trial_id": "4183fe24-599b-42bd-b171-6502de929921",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084350Z_4183fe24"
+        },
+        {
+          "trial_id": "55482c34-b73d-42b6-bd3e-59b8edcd7a27",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090439Z_55482c34"
+        },
+        {
+          "trial_id": "4cec45a9-3989-4506-9a1b-254210f254e6",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085703Z_4cec45a9"
+        },
+        {
+          "trial_id": "63b3cf24-57d9-48ef-bc7a-fbb4ff85fccb",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084045Z_63b3cf24"
+        },
+        {
+          "trial_id": "b4e3d70c-2251-4139-bbcb-8d3fa2a2f2aa",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084509Z_b4e3d70c"
+        },
+        {
+          "trial_id": "e7f115ed-1960-4233-8c62-213de0a22dfb",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085838Z_e7f115ed"
+        },
+        {
+          "trial_id": "a4cd92ee-495d-496f-8732-c4b8427036e4",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085413Z_a4cd92ee"
+        },
+        {
+          "trial_id": "98f0824c-9e5c-42f8-8a81-1997eb192eed",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083952Z_98f0824c"
+        },
+        {
+          "trial_id": "86f46864-31a2-4c39-af79-1aea10389c9d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085944Z_86f46864"
+        },
+        {
+          "trial_id": "f78f48b5-b573-4f2d-b5e3-262b7fc8bf6c",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085157Z_f78f48b5"
+        },
+        {
+          "trial_id": "e93f56ec-c72f-429c-b774-fd26995650e3",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085504Z_e93f56ec"
+        },
+        {
+          "trial_id": "d33860eb-89dc-4e5b-933d-751b9c834d38",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084403Z_d33860eb"
+        },
+        {
+          "trial_id": "43e5d6cd-cb65-4d2a-bb81-758fbf0e441f",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085917Z_43e5d6cd"
+        },
+        {
+          "trial_id": "70684b2f-a821-44e6-b046-dc2545c5fcde",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090244Z_70684b2f"
+        },
+        {
+          "trial_id": "d57fd099-0d32-4c60-8bfa-c1d6fe93a3ce",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085254Z_d57fd099"
+        },
+        {
+          "trial_id": "43408a3b-bfbd-4fb2-ae8d-bdb131a56b18",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084449Z_43408a3b"
+        },
+        {
+          "trial_id": "40c4b64b-87cc-40fd-8045-c1a046fd343d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083753Z_40c4b64b"
+        },
+        {
+          "trial_id": "977af757-2275-41a5-a0ba-80b3e1fb951a",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084431Z_977af757"
+        },
+        {
+          "trial_id": "5583807e-4ad4-4cc3-83af-afa82cf42097",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085546Z_5583807e"
+        },
+        {
+          "trial_id": "df701a92-5169-44ca-99e2-e376d58119f8",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085321Z_df701a92"
+        },
+        {
+          "trial_id": "60a79e6f-1743-48c1-a637-bae996298c87",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083445Z_60a79e6f"
+        },
+        {
+          "trial_id": "3c0ed22a-8935-4cfe-8c56-ecc3a8fd69bd",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084020Z_3c0ed22a"
+        },
+        {
+          "trial_id": "5e1d18dc-9d81-4000-9f53-bf3dd5aa40d0",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090503Z_5e1d18dc"
+        },
+        {
+          "trial_id": "6c8a0490-1ab6-4ab8-851b-0a2d0c19246d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085905Z_6c8a0490"
+        },
+        {
+          "trial_id": "fc1d2b17-e994-429f-8553-b192c1aeedfe",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083502Z_fc1d2b17"
+        },
+        {
+          "trial_id": "7bab7607-b534-4952-97c1-289c50bf82e0",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085719Z_7bab7607"
+        },
+        {
+          "trial_id": "61efc725-c546-48d7-8736-c523b5e7bd00",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090105Z_61efc725"
+        },
+        {
+          "trial_id": "b404a3aa-9a6c-4864-8281-5c473fffc043",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084935Z_b404a3aa"
+        },
+        {
+          "trial_id": "41707799-479d-4c7f-bbca-1fdec5534a20",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083901Z_41707799"
+        },
+        {
+          "trial_id": "bd1f7a69-8fa7-4103-b3e0-3a3b530dd218",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084237Z_bd1f7a69"
+        },
+        {
+          "trial_id": "d407aa59-2bfb-4a6b-937a-ff99e7de54f4",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084007Z_d407aa59"
+        },
+        {
+          "trial_id": "812e5ff7-d44e-4ee0-a832-f3bdcda845ee",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085015Z_812e5ff7"
+        },
+        {
+          "trial_id": "c63d7746-fa39-414f-b3a1-ed88551f3357",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090527Z_c63d7746"
+        },
+        {
+          "trial_id": "1b2d99f6-9280-4a38-8f4e-ee1b656220b2",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085627Z_1b2d99f6"
+        },
+        {
+          "trial_id": "faa70e9b-82a4-43c5-8117-2bca4f246d70",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084155Z_faa70e9b"
+        },
+        {
+          "trial_id": "06cc3713-f593-4a94-961c-098d5f44a266",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085053Z_06cc3713"
+        },
+        {
+          "trial_id": "1ebddb6b-2041-4ed0-b088-6a00793f80d4",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085106Z_1ebddb6b"
+        },
+        {
+          "trial_id": "ec44b3bf-3fd2-4c54-a201-85aff3e64322",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083846Z_ec44b3bf"
+        },
+        {
+          "trial_id": "b31765d5-7821-4ea4-a20d-eff1f4782df7",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090414Z_b31765d5"
+        },
+        {
+          "trial_id": "d04160b1-08b5-4805-b27b-ad9aaa7e6a4e",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083808Z_d04160b1"
+        },
+        {
+          "trial_id": "47e43923-1824-43f5-b91b-cb6c86dcf7d8",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085613Z_47e43923"
+        },
+        {
+          "trial_id": "af518f72-a3a1-444f-b35c-16180928b329",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083820Z_af518f72"
+        },
+        {
+          "trial_id": "61f134fb-21f7-4c95-9cd8-3eb426211d8f",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085401Z_61f134fb"
+        },
+        {
+          "trial_id": "e070de9d-a885-4c63-beff-dcf5f1fc02df",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085118Z_e070de9d"
+        },
+        {
+          "trial_id": "04dc5e2f-c9ae-481b-bddc-3a5f5f5a7e91",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083741Z_04dc5e2f"
+        },
+        {
+          "trial_id": "bd0a33c9-4144-4f51-9e60-48b9b71db414",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084951Z_bd0a33c9"
+        },
+        {
+          "trial_id": "4790e6e0-2f4d-4984-81c5-3c9f29071814",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084326Z_4790e6e0"
+        },
+        {
+          "trial_id": "c694d051-6e6e-4e65-99e6-b3b78bc47555",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085334Z_c694d051"
+        },
+        {
+          "trial_id": "b35294a0-4a74-45df-b428-317595e0472c",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083244Z_b35294a0"
+        },
+        {
+          "trial_id": "7a3a090c-e84b-4d40-bda9-4ff88a9bd694",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083938Z_7a3a090c"
+        }
+      ]
+    },
+    "validation": {
+      "count": 10,
+      "trials": [
+        {
+          "trial_id": "c2c6d2aa-158d-4e67-adb0-dd02977474ce",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084125Z_c2c6d2aa"
+        },
+        {
+          "trial_id": "76ed9323-ccf7-47aa-8bb6-2f78c2c37fdf",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090011Z_76ed9323"
+        },
+        {
+          "trial_id": "0e0e81da-e595-49c6-93ef-aa94a433224b",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085931Z_0e0e81da"
+        },
+        {
+          "trial_id": "84b2a59c-40fb-4ca4-a622-10089ca3105a",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090131Z_84b2a59c"
+        },
+        {
+          "trial_id": "ca3eed73-c698-4c0e-8aa2-9706cd6a9120",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085144Z_ca3eed73"
+        },
+        {
+          "trial_id": "18c3f91e-5789-4513-baa8-69b42c05e155",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085825Z_18c3f91e"
+        },
+        {
+          "trial_id": "c7dc8615-166d-4b7d-b0f8-ace26835696d",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083516Z_c7dc8615"
+        },
+        {
+          "trial_id": "c75b6cd9-a651-4e1b-9971-3b0022c3a3d5",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T090039Z_c75b6cd9"
+        },
+        {
+          "trial_id": "924e437a-921c-403c-a78b-0ed67d7e3842",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084141Z_924e437a"
+        },
+        {
+          "trial_id": "7d365094-7729-48f2-82e2-96311d0d71ae",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T083926Z_7d365094"
+        }
+      ]
+    },
+    "testing": {
+      "count": 10,
+      "trials": [
+        {
+          "trial_id": "dfabfdd1-4a29-4057-871d-24b3c3611004",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084112Z_dfabfdd1"
+        },
+        {
+          "trial_id": "95abfbb3-b6c0-4d16-816a-b6f3f07a2450",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084033Z_95abfbb3"
+        },
+        {
+          "trial_id": "c87b4ca2-2596-4c38-a780-d7605945f990",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085438Z_c87b4ca2"
+        },
+        {
+          "trial_id": "371efc3b-c008-442d-8dc6-c8db9338a945",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085731Z_371efc3b"
+        },
+        {
+          "trial_id": "e47245f8-6dc4-4b65-ab39-075d199023f1",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085957Z_e47245f8"
+        },
+        {
+          "trial_id": "77372ce9-9779-4fc8-80ea-b221a3eab915",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085533Z_77372ce9"
+        },
+        {
+          "trial_id": "6ed17814-a2db-47d8-80e2-9fa475caa697",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085029Z_6ed17814"
+        },
+        {
+          "trial_id": "7f956d8c-9d49-472a-b17c-ef5d77f9c1dc",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T084338Z_7f956d8c"
+        },
+        {
+          "trial_id": "50fe566a-4dac-4dfa-ae62-46590a99f7e3",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085003Z_50fe566a"
+        },
+        {
+          "trial_id": "8a2306e5-4a02-4230-87df-709291be341a",
+          "path": "data/shouyi_withoutGloves_fourIMU/trials/20261008T085451Z_8a2306e5"
+        }
+      ]
+    }
+  },
+  "metrics": {
+    "validation": {
+      "mae_kgf": 3.219557285308838,
+      "rmse_kgf": 3.8814597129821777,
+      "r2": 0.8198956251144409
+    },
+    "testing": {
+      "mae_kgf": 2.9039347171783447,
+      "rmse_kgf": 3.4853851795196533,
+      "r2": 0.8558796048164368
+    }
+  }
+}
