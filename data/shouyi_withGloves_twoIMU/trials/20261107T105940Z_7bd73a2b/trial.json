@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "trial_id": "7bd73a2b-75e9-4d6e-ac42-5e45252fa29d",
+  "subject_id": "shouyi",
+  "subject_height_cm": 171.0,
+  "subject_weight_kg": 70.0,
+  "punch_hand": "right",
+  "session_id": "withGloves",
+  "quality_status": "complete",
+  "quality_flags": [],
+  "countdown_seconds": 3,
+  "requested_recording_seconds": 5.0,
+  "actual_recording_seconds": 5.0008772000001045,
+  "recording_started_at": "2026-11-07T10:59:43.724484+00:00",
+  "recording_ended_at": "2026-11-07T10:59:48.725930+00:00",
+  "sources": [
+    {
+      "port": "COM5",
+      "group_id": 1,
+      "node_id": 0,
+      "wear_location": "right_wrist",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM5_G1_N0.csv",
+      "row_count": 1999,
+      "size_bytes": 233064,
+      "sha256": "7727105b1bf3a431cb6540e959cf737f3d8cbc4aa78e21b5ae8d8dfb4bb6b808"
+    },
+    {
+      "port": "COM5",
+      "group_id": 1,
+      "node_id": 1,
+      "wear_location": "right_shoulder",
+      "baud_rate": 921600,
+      "csv_path": "imu/imu_COM5_G1_N1.csv",
+      "row_count": 1999,
+      "size_bytes": 229252,
+      "sha256": "11b962a37266f9266e523ac1073f01f151067d8037040dbceccd99d761d45c30"
+    }
+  ]
+}
