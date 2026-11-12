@@ -26,6 +26,9 @@ from anrot_imu import AnrotGatewayParser, ImuFrame
 COUNTDOWN_SECONDS = 3
 RECORDING_SECONDS = 5.0
 DEFAULT_BAUD_RATE = 921600
+MIN_SAMPLING_RATE_HZ = 398.0
+COMPLETE_TRIALS_DIRNAME = "trials"
+INVALID_TRIALS_DIRNAME = "invalid_trial"
 CSV_HEADER = (
     "sample_index",
     "elapsed_us",
@@ -290,6 +293,46 @@ def prompt_peak_force() -> Decimal:
             print(f"輸入無效：{error}")
 
 
+SourceIdentity = tuple[str, int, int]
+
+
+def sampling_rate_hz(row_count: int, actual_recording_seconds: float) -> float | None:
+    """Return rows per second over the host-measured recording duration."""
+    if actual_recording_seconds <= 0:
+        return None
+    return row_count / actual_recording_seconds
+
+
+def assess_source_quality(
+    row_counts: dict[SourceIdentity, int], actual_recording_seconds: float
+) -> list[str]:
+    """Return quality flags derived from per-source CSV row counts.
+
+    Identities are ``(port, group_id, node_id)``. A Trial is invalid when a
+    source has no frames, when sources sharing a Port and Group ID have
+    different row counts, or when a source's sampling rate is below
+    ``MIN_SAMPLING_RATE_HZ``.
+    """
+    flags: list[str] = []
+    for (port, group_id, node_id), row_count in row_counts.items():
+        if row_count == 0:
+            flags.append(f"no_frames:{port}:G{group_id}:N{node_id}")
+
+    groups: dict[tuple[str, int], list[tuple[int, int]]] = {}
+    for (port, group_id, node_id), row_count in row_counts.items():
+        groups.setdefault((port, group_id), []).append((node_id, row_count))
+    for (port, group_id), members in groups.items():
+        if len({row_count for _, row_count in members}) > 1:
+            counts = ",".join(f"N{node_id}={row_count}" for node_id, row_count in sorted(members))
+            flags.append(f"row_count_mismatch:{port}:G{group_id}:{counts}")
+
+    for (port, group_id, node_id), row_count in row_counts.items():
+        rate = sampling_rate_hz(row_count, actual_recording_seconds)
+        if row_count > 0 and rate is not None and rate < MIN_SAMPLING_RATE_HZ:
+            flags.append(f"sampling_rate_too_low:{port}:G{group_id}:N{node_id}:{rate:.1f}Hz")
+    return flags
+
+
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     temporary = path.with_suffix(path.suffix + ".part")
     with temporary.open("w", encoding="utf-8", newline="\n") as file:
@@ -355,7 +398,10 @@ def record_trial(config: TrialConfig) -> int:
     connections = _open_serial_ports(config)
     trial_id = str(uuid4())
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
-    trial_directory = config.output_root / "trials" / f"{timestamp}_{trial_id[:8]}"
+    # Every Trial is recorded under invalid_trial/ and only moved to trials/
+    # once it is judged complete, so an interrupted or crashed recording can
+    # never leave partial data in trials/.
+    trial_directory = config.output_root / INVALID_TRIALS_DIRNAME / f"{timestamp}_{trial_id[:8]}"
     imu_directory = trial_directory / "imu"
     writers: dict[tuple[str, int, int], SensorCsvWriter] = {}
     source_configs: dict[tuple[str, int, int], tuple[ReceiverConfig, NodeConfig]] = {}
@@ -456,10 +502,12 @@ def record_trial(config: TrialConfig) -> int:
     quality_flags: list[str] = []
     if capture_error:
         quality_flags.append(capture_error)
-    for identity, sink in writers.items():
-        if sink.row_count == 0:
-            port, group_id, node_id = identity
-            quality_flags.append(f"no_frames:{port}:G{group_id}:N{node_id}")
+    quality_flags.extend(
+        assess_source_quality(
+            {identity: sink.row_count for identity, sink in writers.items()},
+            actual_recording_seconds,
+        )
+    )
     if actual_recording_seconds and actual_recording_seconds < RECORDING_SECONDS * 0.98:
         quality_flags.append("recording_duration_too_short")
 
@@ -469,6 +517,35 @@ def record_trial(config: TrialConfig) -> int:
         quality_status = "invalid"
     else:
         quality_status = "complete"
+
+    sources: list[dict[str, Any]] = []
+    for identity, sink in writers.items():
+        receiver, node = source_configs[identity]
+        if sink.final_path.exists():
+            size_bytes, sha256 = _file_fingerprint(sink.final_path)
+        else:
+            size_bytes, sha256 = 0, ""
+        rate = sampling_rate_hz(sink.row_count, actual_recording_seconds)
+        sources.append(
+            {
+                "port": receiver.port,
+                "group_id": receiver.group_id,
+                "node_id": node.node_id,
+                "wear_location": node.wear_location,
+                "baud_rate": receiver.baud_rate,
+                "csv_path": sink.final_path.relative_to(trial_directory).as_posix(),
+                "row_count": sink.row_count,
+                "sampling_rate_hz": None if rate is None else round(rate, 3),
+                "size_bytes": size_bytes,
+                "sha256": sha256,
+            }
+        )
+
+    if quality_status == "complete":
+        complete_directory = config.output_root / COMPLETE_TRIALS_DIRNAME / trial_directory.name
+        complete_directory.parent.mkdir(parents=True, exist_ok=True)
+        trial_directory.rename(complete_directory)
+        trial_directory = complete_directory
 
     recorded_at = datetime.now(timezone.utc).isoformat()
     if peak_force is not None:
@@ -486,27 +563,6 @@ def record_trial(config: TrialConfig) -> int:
         )
     else:
         force_n = None
-
-    sources: list[dict[str, Any]] = []
-    for identity, sink in writers.items():
-        receiver, node = source_configs[identity]
-        if sink.final_path.exists():
-            size_bytes, sha256 = _file_fingerprint(sink.final_path)
-        else:
-            size_bytes, sha256 = 0, ""
-        sources.append(
-            {
-                "port": receiver.port,
-                "group_id": receiver.group_id,
-                "node_id": node.node_id,
-                "wear_location": node.wear_location,
-                "baud_rate": receiver.baud_rate,
-                "csv_path": sink.final_path.relative_to(trial_directory).as_posix(),
-                "row_count": sink.row_count,
-                "size_bytes": size_bytes,
-                "sha256": sha256,
-            }
-        )
 
     _write_json(
         trial_directory / "trial.json",

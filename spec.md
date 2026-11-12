@@ -22,8 +22,9 @@
 | Sensor Frame | 一顆 IMU 在一個取樣時間點產生的一筆已解析資料。 |
 | Raw IMU CSV | 一顆 IMU 在一次 Trial 中的原始已解析時序資料；不包含濾波、重採樣或特徵工程。 |
 | Trial Config | 使用者在執行腳本前自行撰寫的 `.cfg`，定義 Port、Group ID、Node ID 與佩帶位置。 |
-| Complete Trial | 完成 5 秒錄製、所有設定來源皆至少收到一筆 Frame，且成功保存有效 Peak Force 的 Trial。 |
-| Invalid Trial | 已保存但有來源缺少 Frame、錄製錯誤或其他品質問題的 Trial；不得直接用於模型訓練。 |
+| Sampling Rate | 一份 Raw IMU CSV 的資料列數除以 `actual_recording_seconds`，單位 Hz。 |
+| Complete Trial | 完成 5 秒錄製、所有設定來源皆至少收到一筆 Frame、同一 Port／Group ID 下各 CSV 列數相等、每份 CSV Sampling Rate ≥ 398 Hz，且成功保存有效 Peak Force 的 Trial。保存於 `trials/`。 |
+| Invalid Trial | 已保存但有來源缺少 Frame、同 Group 列數不相等、Sampling Rate 不足、錄製錯誤或其他品質問題的 Trial；保存於 `invalid_trial/` 供分析，不得直接用於模型訓練。 |
 
 ## 1. 目標與範圍
 
@@ -139,6 +140,8 @@ Countdown 固定為 3 秒、正式錄製固定為 5 秒，不由 `.cfg` 覆寫�
     -> 同時錄製所有來源 5 秒
     -> 自動停止並關閉 Ports
     -> 使用者輸入 Peak Force (kgf)
+    -> 完整性判定
+    -> complete 時將 Trial 從 invalid_trial/ 移至 trials/
     -> 寫入 Ground Truth 與 Trial Metadata
     -> 更新 Dataset Manifest
 ```
@@ -169,9 +172,24 @@ Enter peak force (kgf):
 
 ### 4.5 完整性判定
 
-若所有設定的 Nodes 均至少收到一筆 Frame，且 Peak Force 有效，Trial `quality_status` MUST 為 `complete`。
+若下列條件全部成立，Trial `quality_status` MUST 為 `complete`：
 
-若任一設定來源沒有 Frame、錄製期間發生錯誤或實際錄製時間顯著不足，資料 MAY 保存以利除錯，但 `quality_status` MUST 為 `invalid`，並在 `quality_flags` 列出原因。
+- 所有設定的 Nodes 均至少收到一筆 Frame。
+- 同一 Port 且同一 Group ID 下的所有 CSV `row_count` 相等。同一 Gateway 封包會同時攜帶該 Group 所有 Nodes 的資料，因此正常錄製時列數必然相等；不相等代表有 Node 掉線。
+- 每份 CSV 的 Sampling Rate（`row_count / actual_recording_seconds`）≥ 398 Hz。
+- 實際錄製時間不少於 4.9 秒，且錄製期間沒有錯誤。
+- Peak Force 有效。
+
+任一條件不成立時，資料 MUST 保存以利分析，`quality_status` MUST 為 `invalid`（使用者中斷時為 `aborted`），並在 `quality_flags` 列出原因：
+
+| Flag | 條件 |
+|---|---|
+| `no_frames:<PORT>:G<group>:N<node>` | 該來源沒有任何 Frame。 |
+| `row_count_mismatch:<PORT>:G<group>:N<node>=<rows>,...` | 同一 Port／Group ID 下各 CSV 列數不相等。 |
+| `sampling_rate_too_low:<PORT>:G<group>:N<node>:<rate>Hz` | 該 CSV Sampling Rate < 398 Hz（沒有 Frame 的來源只標 `no_frames`）。 |
+| `recording_duration_too_short` | 實際錄製時間 < 4.9 秒。 |
+| `capture_error:...`／`file_finalize_error:...` | 錄製或寫檔時發生錯誤。 |
+| `user_aborted`／`ground_truth_input_aborted` | 使用者中斷錄製或 Peak Force 輸入（狀態為 `aborted`）。 |
 
 ## 5. Data Path
 
@@ -204,16 +222,21 @@ Enter peak force (kgf):
 ```text
 <output_root>/
 ├─ dataset_manifest.csv
-└─ trials/
+├─ trials/                 # 只放 complete Trial
+│  └─ <UTC timestamp>_<trial-id-prefix>/
+│     ├─ recording.cfg
+│     ├─ trial.json
+│     ├─ ground_truth.json
+│     └─ imu/
+│        ├─ imu_COM3_G1_N0.csv
+│        ├─ imu_COM3_G1_N1.csv
+│        └─ imu_COM4_G2_N0.csv
+└─ invalid_trial/          # invalid 與 aborted Trial，結構與 trials/ 相同
    └─ <UTC timestamp>_<trial-id-prefix>/
-      ├─ recording.cfg
-      ├─ trial.json
-      ├─ ground_truth.json
-      └─ imu/
-         ├─ imu_COM3_G1_N0.csv
-         ├─ imu_COM3_G1_N1.csv
-         └─ imu_COM4_G2_N0.csv
+      └─ ...
 ```
+
+`trials/` MUST 只包含 `complete` Trial。錄製時 Trial 資料夾 MUST 先建立於 `invalid_trial/`，判定為 `complete` 後才整個移至 `trials/`；因此錄製中斷或程式崩潰時，殘留資料只會出現在 `invalid_trial/`。`aborted` Trial 若未輸入 Peak Force，不會有 `ground_truth.json`。
 
 出拳手、Port、Group ID、Node ID、佩帶位置及 CSV 路徑 MUST 同時記錄在 `trial.json`。佩帶位置不必放入檔名，因此可安全使用中文或其他 Unicode 文字。
 
@@ -308,13 +331,14 @@ peak_force_n = peak_force_kgf * 9.80665
       "wear_location": "left_wrist",
       "baud_rate": 921600,
       "csv_path": "imu/imu_COM3_G1_N0.csv",
-      "row_count": 2000
+      "row_count": 2000,
+      "sampling_rate_hz": 399.96
     }
   ]
 }
 ```
 
-腳本 SHOULD 另外保存每個 CSV 的檔案大小與 SHA-256，以便後續檢查資料完整性。
+`sampling_rate_hz` 為 `row_count / actual_recording_seconds`，若未開始錄製則為 `null`。腳本 SHOULD 另外保存每個 CSV 的檔案大小與 SHA-256，以便後續檢查資料完整性。
 
 ## 10. Dataset Manifest
 
@@ -325,7 +349,7 @@ trial_id,subject_id,subject_height_cm,subject_weight_kg,session_id,recorded_at,t
 peak_force_kgf,peak_force_n,quality_status
 ```
 
-`trial_path` MUST 使用相對於 `output_root` 的路徑。Manifest 不展開每顆 IMU 的 CSV；完整來源清單由該 Trial 的 `trial.json` 提供。
+`trial_path` MUST 使用相對於 `output_root` 的路徑，例如 `trials/<...>` 或 `invalid_trial/<...>`。Manifest 包含所有 Trial（含 invalid 與 aborted），使用端 MUST 依 `quality_status` 篩選。Manifest 不展開每顆 IMU 的 CSV；完整來源清單由該 Trial 的 `trial.json` 提供。
 
 ## 11. 失敗與中斷
 
@@ -348,3 +372,5 @@ peak_force_kgf,peak_force_n,quality_status
 8. 錄製結束後要求使用者輸入正數 Peak Force（kgf）。
 9. Trial Config、出拳手、Ground Truth、來源對應、品質狀態與資料檔皆可追溯。
 10. 不同 Trial 不會互相覆寫。
+11. 同一 Port／Group ID 下 CSV 列數不相等，或任一 CSV Sampling Rate < 398 Hz 的 Trial 標示為 `invalid`。
+12. `trials/` 只包含 `complete` Trial；`invalid` 與 `aborted` Trial 保存在 `invalid_trial/`。

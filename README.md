@@ -36,6 +36,11 @@ uv run python .\record_trial.py --config .\configs\example.cfg
 
 腳本會先開啟所有 Ports，倒數 3 秒，錄製 5 秒，然後要求輸入力板顯示的 Peak Force（kgf）。資料預設寫入 `data/`。
 
+錄製完成後會自動判定品質：
+
+- `complete`：每顆 IMU 都有資料、同一 Port／Group ID 的 CSV 列數相等、每份 CSV 取樣率 ≥ 398 Hz。存入 `<output_root>/trials/`，exit code 0。
+- `invalid`／`aborted`：存入 `<output_root>/invalid_trial/` 供分析原因，原因列在 `trial.json` 的 `quality_flags`，exit code 1。
+
 完整格式與行為請見 [`spec.md`](spec.md)。
 
 ## Training Artifacts
